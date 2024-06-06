@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include "../header/temperature_and_humidity.h"
 
-int data;
-
 void error_handling(char *message){
     fputs(message, stderr);
     fputc('\n', stderr);
@@ -17,11 +15,9 @@ void error_handling(char *message){
 }
 
 int main(int argc, char *argv[]) {
-    int state = 1;
-    int prev_state = 1;
-    int light = 0;
+    int serv_sock, clnt_sock = -1;
+    int data_to_send = 0;
 
-    int serv_sock, client_sock = -1;
     struct sockaddr_in serv_addr, clnt_addr;
     socklen_t clnt_addr_size;
     char msg[2] = {0};
@@ -54,11 +50,13 @@ int main(int argc, char *argv[]) {
     printf("Connection established\n");
 
     while (1){
-        for (int i = 0; i < 5; i++)
-            data[i] = 0;
+        data_to_send = t_and_h();
 
-        data = t_and_h();
+        snprintf(msg, 2, "%d", data_to_send);
+        write(clnt_sock, msg, sizeof(msg));
+        printf("msg = %s\n", msg);
 
+        usleep(10000000);
     }
 
     close(clnt_sock);

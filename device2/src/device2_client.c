@@ -9,10 +9,6 @@
 #include <unistd.h>
 #include "../header/speaker.h"
 
-#define BUFFER_MAX 3
-#define DIRECTION_MAX 256
-#define VALUE_MAX 256
-
 void error_handling(char *message) {
     fputs(message, stderr);
     fputc('\n', stderr);
@@ -51,7 +47,7 @@ int main(int argc, char *argv[]){
         if (str_len == -1)
             error_handling("read() error");
 
-        if (!strcmp(msg, msg, 1))
+        if (strcmp(msg, "1") == 0)
             buzzer();
     }
 
