@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cjson/cJSON.h>
 #include "../header/temperature_and_humidity.h"
 
 void error_handling(char *message){
@@ -14,16 +15,46 @@ void error_handling(char *message){
     exit(1);
 }
 
+void create_and_send_json(int socket_fd, int value_from_sensor) {
+    cJSON *json = cJSON_CreateObject();
+    if (json == NULL) {
+        printf("Failed to create JSON object\n");
+        return;
+    }
+
+    // JSON 데이터 추가
+    cJSON_AddStringToObject(json, "type", "sensor");
+    cJSON_AddStringToObject(json, "sensor_type", "humidity");
+    cJSON_AddNumberToObject(json, "value", value_from_sensor);
+
+    // JSON 객체를 문자열로 변환
+    char *json_str = cJSON_PrintUnformatted(json);
+    if (json_str == NULL) {
+        printf("Failed to print JSON object\n");
+        cJSON_Delete(json);
+        return;
+    }
+
+    // JSON 문자열 전송
+    send(socket_fd, json_str, strlen(json_str), 0);
+    printf("Sent response: %s\n", json_str);
+
+    // 메모리 해제
+    free(json_str);
+    cJSON_Delete(json);
+}
+
 int main(int argc, char *argv[]) {
     int serv_sock, clnt_sock = -1;
     int data_to_send = 0;
 
     struct sockaddr_in serv_addr, clnt_addr;
     socklen_t clnt_addr_size;
-    char msg[2] = {0};
 
-    if (argc != 2)
+    if (argc != 2) {
         printf("Usage : %s <port>\n", argv[0]);
+        exit(1);
+    }
 
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     if (serv_sock == -1)
@@ -51,10 +82,7 @@ int main(int argc, char *argv[]) {
 
     while (1){
         data_to_send = t_and_h();
-
-        snprintf(msg, 2, "%d", data_to_send);
-        write(clnt_sock, msg, sizeof(msg));
-        printf("msg = %s\n", msg);
+        create_and_send_json(clnt_sock, data_to_send);
 
         usleep(10000000);
     }

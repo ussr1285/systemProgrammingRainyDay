@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cjson/cJSON.h>
 #include "../header/speaker.h"
 
 void error_handling(char *message) {
@@ -18,9 +19,14 @@ void error_handling(char *message) {
 int main(int argc, char *argv[]){
     int sock;
     struct sockaddr_in serv_addr;
-    char msg[2];
-    char on[2] = "1";
+    char msg[1024] = {0};
     int str_len;
+
+    cJSON *json;
+    cJSON *type;
+    const cJSON *actuator_type;
+    const cJSON *action;
+
 
     if (argc != 3) {
     printf("Usage : %s <IP> <port>\n", argv[0]);
@@ -46,12 +52,36 @@ int main(int argc, char *argv[]){
 
         if (str_len == -1)
             error_handling("read() error");
+        
+        msg[str_len] = '\0';
 
-        if (strcmp(msg, "1") == 0)
-            buzzer();
+        json = cJSON_Parse(msg);
+        if (json == NULL){
+            fprintf(stderr, "Failed ro parse JSON\n");
+            close(sock);
+            continue;
+        }
+
+        type = cJSON_GetObjectItem(json, "type");
+        if (cJSON_IsString(type) && (type->valuestring != NULL)) {
+            if (strcmp(type->valueString, "actuator") == 0){
+                actuator_type = cJSON_GetObjectItem(json, "actuator_type");
+
+                if (cJSON_IsString(actuator_type) && (actuator_type->valuestring != NULL)){
+                    if (strcmp(actuator_type->valuestring, "speaker") == 0){
+                        action = cJSON_GetObjectItem(json, "action");
+                        if (cJSON_IsString(action) && (action->valuestring != NULL)) {
+                            if (strcmp(action->valuestring, "1"))
+                                buzzer();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     close(sock);
+    cJSON_Delete(json);
 
     return 0;
 }
