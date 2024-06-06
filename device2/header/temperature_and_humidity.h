@@ -2,4 +2,4 @@
 
 int data[5];
 int readData(void);
-int* t_and_h(void);
+int t_and_h(void);

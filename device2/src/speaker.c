@@ -1,6 +1,7 @@
 #include <wiringPi.h>
 #include <stdio.h>
 
+// GPIO 1
 #define PIN 1 // can modify this number
 
 int buzzer(void){

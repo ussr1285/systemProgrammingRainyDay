@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// GPIO 7
 #define T_H_PIN 7 // can modify this number
 
 int data[5];
@@ -52,12 +53,12 @@ int readData(void){
     return 0;
 }
 
-int* t_and_h(void){
+int t_and_h(void){
     while (wiringPiSetup() == -1);
     while (readData() == 0)
         delay(1000);
 
     //printf("humidity: %d.%d %% temperature: %d.%d C\n", data[0], data[1], data[2], data[3]);
 
-    return data;
+    return data[0];
 }

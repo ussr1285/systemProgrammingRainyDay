@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "../header/temperature_and_humidity.h"
 
-int data[5];
+int data;
 
 void error_handling(char *message){
     fputs(message, stderr);
