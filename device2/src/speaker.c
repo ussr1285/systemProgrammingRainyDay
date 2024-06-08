@@ -36,6 +36,5 @@ int buzzer(void){
         // Stop ringing by setting the duty cycle to 0
         pwmWrite(PIN, 0);
     }
-
 }
 
