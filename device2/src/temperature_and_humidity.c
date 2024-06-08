@@ -3,19 +3,19 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// can modify these numbers
-// GPIO 4
+/*
+can modify these numbers
+GPIO 4 */
 #define T_H_PIN 7
 
-// macro variable: for storing data from sensor
 /*
+macro variable: for storing data from sensor
 the data will be stored as below:
     data[0]: integer part of humidity data
     data[1]: float part of humidity data
     data[2]: integer part of temperature data
     data[3]: float part of temperature data
-    data[4]: checksum (to verify the integrity of the data)
-*/
+    data[4]: checksum (to verify the integrity of the data) */
 int data[5];
 
 // function: for reading data from sensor

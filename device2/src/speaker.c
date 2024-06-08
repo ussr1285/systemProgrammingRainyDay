@@ -1,8 +1,9 @@
 #include <wiringPi.h>
 #include <stdio.h>
 
-// can modify these numbers
-// GPIO 18
+/*
+can modify these numbers
+GPIO 18 */
 #define PIN 1
 
 // function for speaker(buzzer)
@@ -13,7 +14,9 @@ int buzzer(void){
     // set GPIO pin to pwm mode
     pinMode(PIN, PWM_OUTPUT);
 
-    // set pwm clock: it affects the frequency of the pwm signal
+    /*
+    set pwm clock
+    19.2 MHz / 19 = about 1 MHz */
     pwmSetClock(19);
 
     // set pwm mode to Mark-Space mode for more accurate pwm signal
@@ -24,16 +27,20 @@ int buzzer(void){
         // time pause for 1 sec
         delay(1000);
 
-        // set pwm range to 262 hz (pitch A)
+        /*
+        set pwm range to 262 hz (pitch C)
+        clock / pwmSetRange parameter */
         pwmSetRange(1000000 / 262);
 
-        // set pwm duty cycle
+        /*
+        set pwm duty cycle
+        50% on, 50% off for clear sound */
         pwmWrite(PIN, 1000000 / 262 / 2);
 
         // ringing for 3 sec
         delay(3000);
 
-        // Stop ringing by setting the duty cycle to 0
+        // Stop ringing by setting the duty cycle to 0 (OFF)
         pwmWrite(PIN, 0);
     }
 }
