@@ -1,8 +1,9 @@
 #include <wiringPi.h>
 #include <stdio.h>
 
-// GPIO 1
-#define PIN 1 // can modify this number
+// can modify these numbers
+// GPIO 18
+#define PIN 1
 
 // function for speaker(buzzer)
 int buzzer(void){
@@ -31,9 +32,10 @@ int buzzer(void){
 
         // ringing for 3 sec
         delay(3000);
+
+        // Stop ringing by setting the duty cycle to 0
+        pwmWrite(PIN, 0);
     }
 
-    // Stop PWM signal by setting the duty cycle to 0
-    pwmWrite(PIN, 0);
 }
 

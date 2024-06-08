@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// GPIO 7
-#define T_H_PIN 7 // can modify this number
+// can modify these numbers
+// GPIO 4
+#define T_H_PIN 7
 
 // macro variable: for storing data from sensor
 /*
@@ -91,7 +92,7 @@ int t_and_h(void){
     // initialize wiringPi library to control GPIO pin: repeat till success
     while (wiringPiSetup() == -1);
 
-    // read data: repeat till getting valid data
+    // read data: repeat till receiving valid data
     while (readData() == 0)
         delay(1000);
 

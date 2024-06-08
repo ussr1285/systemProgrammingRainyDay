@@ -29,20 +29,20 @@ void create_and_send_json(int socket_fd, int value_from_sensor, int flag) {
     }
 
     // json: add data
-    // when flag is 1, which means this json object is generated for sending data from sensor
+    // when flag is 1, which means this json object is generated for sending data from sensor to main device
     if (flag){
         cJSON_AddStringToObject(json, "type", "sensor");
         cJSON_AddStringToObject(json, "sensor_type", "humidity");
         cJSON_AddNumberToObject(json, "value", value_from_sensor);
     }
     
-    // when flag is 0, which means this json object is generated for sending request
+    // when flag is 0, which means this json object is generated for sending request to main device
     else{
         cJSON_AddStringToObject(json, "type", "actuator");
         cJSON_AddStringToObject(json, "actuator_type", "speaker");
     }
 
-    // transfrom json object into string
+    // convert json object into string
     char *json_str = cJSON_PrintUnformatted(json);
     if (json_str == NULL) {
         printf("Failed to print JSON object\n");
@@ -52,7 +52,14 @@ void create_and_send_json(int socket_fd, int value_from_sensor, int flag) {
 
     // send json string
     send(socket_fd, json_str, strlen(json_str), 0);
-    printf("Sent response: %s\n", json_str);
+
+    // when sending data
+    if (flag)
+        printf("Sent data: %s\n", json_str);
+    
+    // when sending request
+    else
+        printf("Sent request: %s\n", json_str);
 
     // return memory and clear json
     free(json_str);
@@ -77,6 +84,7 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
+    // noticing there is no problem with connecting to user
     printf("Connection established\n");
 
     // For temperature and humidity sensor
@@ -155,8 +163,8 @@ int main(int argc, char *argv[]){
         memset(msg, 0, sizeof(msg));
         close(sock);
 
-        // time pause for 3 sec
-        usleep(3000000);
+        // time pause for 0.5 sec
+        usleep(500000);
 
         // For speaker(buzzer)
         // create new socket
@@ -233,6 +241,7 @@ int main(int argc, char *argv[]){
         close(sock);
 
         // time pause for 3 sec
+        // since the humidity doesn't change rapidly
         usleep(3000000);
     
     }
