@@ -28,8 +28,9 @@ void create_and_send_json(int socket_fd, int value_from_sensor, int flag) {
         return;
     }
 
-    // json: add data
-    // when flag is 1, which means this json object is generated for sending data from sensor to main device
+    /*
+    json: add data
+    when flag is 1, which means this json object is generated for sending data from sensor to main device */
     if (flag){
         cJSON_AddStringToObject(json, "type", "sensor");
         cJSON_AddStringToObject(json, "sensor_type", "humidity");
@@ -166,8 +167,9 @@ int main(int argc, char *argv[]){
         // time pause for 0.5 sec
         usleep(500000);
 
-        // For speaker(buzzer)
-        // create new socket
+        /*
+        For speaker(buzzer)
+        create new socket */
         sock = socket(PF_INET, SOCK_STREAM, 0);
 
         // handling error: socket is not created
@@ -191,7 +193,7 @@ int main(int argc, char *argv[]){
             error_handling("connect() error");
 
         // create json object for sending request to main device
-        create_and_send_json(sock, data_to_send, 0);
+        create_and_send_json(sock, 0, 0);
 
         // time pause for 2 sec
         usleep(2000000);
@@ -240,8 +242,9 @@ int main(int argc, char *argv[]){
         memset(msg, 0, sizeof(msg));
         close(sock);
 
-        // time pause for 3 sec
-        // since the humidity doesn't change rapidly
+        /* 
+        time pause for 3 sec
+        since the humidity doesn't change rapidly */
         usleep(3000000);
     
     }
