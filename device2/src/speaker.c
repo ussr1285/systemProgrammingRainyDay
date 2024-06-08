@@ -24,7 +24,7 @@ int buzzer(void){
         // time pause for 1 sec
         delay(1000);
 
-        // set pwm range to 262 hz (pitch A)
+        // set pwm range to 262 hz (pitch C)
         pwmSetRange(1000000 / 262);
 
         // set pwm duty cycle
