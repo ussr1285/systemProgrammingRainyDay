@@ -8,7 +8,7 @@ CFLAGS = -g
 LIBS = -lpthread -lcjson
 
 # 소스 파일
-SRCS = main.c getLight.c led.c ft_strdup.c ft_itoa.c
+SRCS = main.c getLight.c led.c
 
 # 객체 파일
 OBJS = $(SRCS:.c=.o)

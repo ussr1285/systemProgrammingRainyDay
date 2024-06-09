@@ -128,19 +128,18 @@ static void dispose(void *option)
 
 void adjustLED(int *currentLEDValue, int LEDValue)
 {
+
     assert(LEDValue >= 0 && LEDValue <= 100);
     while (1)
     {
         if (*currentLEDValue == LEDValue)
             return;
-        else if (*currentLEDValue < LEDValue) //  && *currentLEDValue <= 100
+        else if (*currentLEDValue < LEDValue)
             *currentLEDValue += 1;
-        else if (*currentLEDValue > LEDValue) //  && *currentLEDValue >= 0
+        else if (*currentLEDValue > LEDValue)
             *currentLEDValue -= 1;
 
         PWMWriteDutyCycle(PWM, *currentLEDValue * DUTY_CYCLE);
-        // printf("%d\n", *currentLEDValue);
-        //
         usleep(10000);
     }
 }
@@ -163,12 +162,9 @@ void *led_routine(void *option)
     // 폴링하면서 버튼 이벤트 핸들링.
     while (1)
     {
-        // printf("value: %d\n", optionInfo->value);
         // 폴링레이트에 따라서 1초에 몇번 작동할지에 따라, 해당하는 HZ로 동작하도록 usleep 함.
         if (optionInfo->value != currentLEDValue)
             adjustLED(&currentLEDValue, optionInfo->value);
-        // adjustLED(0, 1000);
-        // adjustLED(1000, 0);
         usleep(1000000 / optionInfo->polling_rate);
     }
 

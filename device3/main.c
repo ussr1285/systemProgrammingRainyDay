@@ -38,6 +38,7 @@ cJSON *sendMsg(OPTION *option, int sock, char *message)
 {
     cJSON *json = cJSON_CreateObject();
     cJSON *receiveJSON;
+    int str_len = 0;
 
     cJSON_AddStringToObject(json, "type", option->type);
     if(strcmp(option->type, "sensor") == 0)
@@ -49,12 +50,9 @@ cJSON *sendMsg(OPTION *option, int sock, char *message)
     {
         cJSON_AddStringToObject(json, "actuator_type", option->devName);
     }
-    
-    int str_len;
 
     message = cJSON_Print(json);
     write(sock, message, strlen(message));
-    // printf("test: %s \n", ft_itoa(option->value));
     str_len = read(sock, buffer, 1024);
     if (str_len == -1)
         error_handling("read() error");
@@ -81,13 +79,13 @@ int main(int argc, char *argv[])
     OPTION *getLightOption = (OPTION *)calloc(1, sizeof(OPTION));
     strcpy(getLightOption->type, "sensor");
     strcpy(getLightOption->devName, "light_intensity");
-    getLightOption->polling_rate = atoi(argv[2]);
+    getLightOption->polling_rate = 100;
     getLightOption->value = 0;
 
     OPTION *LEDOption = (OPTION *)calloc(1, sizeof(OPTION));
     strcpy(LEDOption->type, "actuator");
     strcpy(LEDOption->devName, "led");
-    LEDOption->polling_rate = atoi(argv[2]);
+    LEDOption->polling_rate = 100;
     LEDOption->value = 0;
 
     if ((getLightThread = initGetLight(getLightOption)) == NULL)
@@ -129,14 +127,9 @@ int main(int argc, char *argv[])
         else // 조도 값에 기반하여 led 제어.
         {
             receiveJSON = sendMsg(LEDOption, sock, message);
-            cJSON *action = cJSON_GetObjectItem(receiveJSON, "action");
+            cJSON *action = cJSON_GetObjectItem(receiveJSON, "led_value");
             msg = cJSON_Print(action);
-            if(strcmp(msg, "1") == 0)
-            {
-                LEDOption->value = 1024;
-            }
-            else
-                LEDOption->value = 1024; // 0
+            LEDOption->value = atoi(msg);
             signal *= -1;
         }
         printf("Receive message from Server : %s\n", msg);
@@ -144,11 +137,9 @@ int main(int argc, char *argv[])
         free(receiveJSON);
         sleep(1);
         close(sock);
-        // LEDOption->value = 100;
-        // sleep(4);
-        // LEDOption->value = 0;
-        // sleep(4);
     }
-    printf("server is downed. please rerun\n");
+    free(getLightThread);
+    free(LEDThread);
+    printf("Program is downed. please rerun\n");
     return 0;
 }
